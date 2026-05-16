@@ -1,10 +1,14 @@
-import SwiftUI
+// Saving events in calendar logic
+
+import Foundation
 import EventKit
+import Combine
 
 final class CalendarEventStore: ObservableObject {
     @Published var events: [EKEvent] = []
     @Published var isAuthorized: Bool = false
     @Published var errorMessage: String?
+    @Published var upcomingEvents: [EKEvent] = []
 
     private let store = EKEventStore()
 
@@ -19,9 +23,6 @@ final class CalendarEventStore: ObservableObject {
                     self?.errorMessage = "Calendar access error: \(error.localizedDescription)"
                 }
                 self?.isAuthorized = granted
-                if granted {
-                    // No-op here; the view will trigger loadEvents via onChange
-                }
             }
         }
     }
@@ -30,38 +31,109 @@ final class CalendarEventStore: ObservableObject {
         guard isAuthorized else { return }
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
-        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return }
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay.addingTimeInterval(86400)
 
         let predicate = store.predicateForEvents(withStart: startOfDay, end: endOfDay, calendars: nil)
-        let fetched = store.events(matching: predicate).sorted { lhs, rhs in
-            lhs.startDate < rhs.startDate
-        }
+        let found = store.events(matching: predicate).sorted { $0.startDate < $1.startDate }
+
         DispatchQueue.main.async {
-            self.events = fetched
+            self.events = found
+        }
+    }
+    
+    func loadEvents(in start: Date, end: Date, primaryOnly: Bool = true) {
+        guard isAuthorized else { return }
+        let calendars: [EKCalendar]?
+        if primaryOnly, let defaultCal = store.defaultCalendarForNewEvents {
+            calendars = [defaultCal]
+        } else {
+            calendars = nil
+        }
+        let predicate = store.predicateForEvents(withStart: start, end: end, calendars: calendars)
+        let found = store.events(matching: predicate).sorted { $0.startDate < $1.startDate }
+        DispatchQueue.main.async {
+            self.events = found
+        }
+    }
+    
+    func loadUpcomingEvents(daysAhead: Int = 7, primaryOnly: Bool = true) {
+        guard isAuthorized else { return }
+        let cal = Calendar.current
+        let now = Date()
+        let start = now
+        let end = cal.date(byAdding: .day, value: daysAhead, to: start) ?? now
+
+        let calendars: [EKCalendar]?
+        if primaryOnly, let defaultCal = store.defaultCalendarForNewEvents {
+            calendars = [defaultCal]
+        } else {
+            calendars = nil
+        }
+
+        let predicate = store.predicateForEvents(withStart: start, end: end, calendars: calendars)
+        let found = store.events(matching: predicate).sorted { $0.startDate < $1.startDate }
+
+        DispatchQueue.main.async {
+            self.upcomingEvents = found
         }
     }
 
-    func addTestEvent(on date: Date) {
+    func addEvent(
+        title: String,
+        startDate: Date,
+        endDate: Date,
+        notes: String? = nil,
+        isAllDay: Bool = false
+    ) {
         guard isAuthorized else { return }
+
         let event = EKEvent(eventStore: store)
-        event.title = "Test Event"
-
-        let calendar = Calendar.current
-        let startOfDay = calendar.startOfDay(for: date)
-        let start = calendar.date(byAdding: .hour, value: 9, to: startOfDay) ?? date
-        let end = calendar.date(byAdding: .hour, value: 1, to: start) ?? start.addingTimeInterval(3600)
-
-        event.startDate = start
-        event.endDate = end
+        event.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        event.startDate = startDate
+        event.endDate = endDate
+        event.isAllDay = isAllDay
+        event.notes = notes
         event.calendar = store.defaultCalendarForNewEvents
 
         do {
             try store.save(event, span: .thisEvent)
-            // Reload events for that day
-            loadEvents(for: date)
         } catch {
             DispatchQueue.main.async {
                 self.errorMessage = "Failed to save event: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    func update(
+        event: EKEvent,
+        title: String,
+        startDate: Date,
+        endDate: Date,
+        notes: String? = nil,
+        isAllDay: Bool = false
+    ) {
+        guard isAuthorized else { return }
+        event.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        event.startDate = startDate
+        event.endDate = endDate
+        event.isAllDay = isAllDay
+        event.notes = notes
+        do {
+            try store.save(event, span: .thisEvent)
+        } catch {
+            DispatchQueue.main.async {
+                self.errorMessage = "Failed to update event: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    func delete(event: EKEvent) {
+        guard isAuthorized else { return }
+        do {
+            try store.remove(event, span: .thisEvent)
+        } catch {
+            DispatchQueue.main.async {
+                self.errorMessage = "Failed to delete event: \(error.localizedDescription)"
             }
         }
     }
@@ -70,10 +142,9 @@ final class CalendarEventStore: ObservableObject {
         switch EKEventStore.authorizationStatus(for: .event) {
         case .authorized, .fullAccess:
             isAuthorized = true
-        case .notDetermined, .denied, .restricted, .writeOnly:
-            isAuthorized = false
-        @unknown default:
+        default:
             isAuthorized = false
         }
     }
 }
+

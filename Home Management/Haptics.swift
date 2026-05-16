@@ -1,3 +1,5 @@
+// Haptics to use later if there's time
+
 import UIKit
 
 enum Haptics {

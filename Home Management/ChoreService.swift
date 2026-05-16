@@ -1,112 +1,153 @@
+// Got some help from AI on this. This is to "talk" to the backend on Supabase
 import Foundation
 import Supabase
 
-struct Chore: Codable, Identifiable, Equatable {
+// DB row model for the "chores" table.
+// Keep this separate from UI model "Chore" in ChoresViewModel.swift.
+struct ChoreRow: Identifiable, Equatable {
+    let id: UUID // user's id
+    let householdId: UUID // household id
+    let title: String // Chore title (what the chore is)
+    let dueDate: Date? // Due date for the chore
+    let isDone: Bool // yes or no
+    let assignedTo: UUID? // Who the chore is assigned to
+    let createdAt: Date? // created date (might not need?)
+}
+
+// DTO used only for decoding PostgREST JSON (Postgres `date` comes back as "yyyy-MM-dd" string).
+private struct ChoreRowDTO: Decodable {
     let id: UUID
-    var title: String
-    var dueDate: Date?
-    var isComplete: Bool
-    var assignedTo: UUID?
-    var householdId: UUID
-    var createdAt: Date?
-    var updatedAt: Date?
+    let householdId: UUID
+    let title: String
+    let dueDate: String?
+    let isDone: Bool
+    let assignedTo: UUID?
+    let createdAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case title
+        case dueDate = "due_date"
+        case isDone = "is_done"
+        case assignedTo = "assigned_to"
+        case createdAt = "created_at"
+    }
 }
 
-class ChoreService {
-    static let shared = ChoreService()
-    private let client = SupabaseManager.shared.client
-    private let tableName = "chores"
-
-    private init() {}
-
-    func fetchChores(for householdId: UUID) async throws -> [Chore] {
-        let response = try await client
-            .from(tableName)
-            .select()
-            .eq(column: "household_id", value: householdId.uuidString)
-            .order(column: "due_date", ascending: true)
-            .execute()
-        guard let data = response.data else {
-            return []
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try data.decoded(to: [Chore].self, decoder: decoder)
+final class ChoreService {
+    private static func dateOnlyFormatter() -> DateFormatter {
+        let df = DateFormatter()
+        df.calendar = Calendar(identifier: .gregorian)
+        df.locale = Locale(identifier: "en_US_POSIX")
+        // Interpret date-only strings in the user's local time zone.
+        // (For grouping into Today/Overdue, we care about local calendar days.)
+        df.timeZone = TimeZone.current
+        df.dateFormat = "yyyy-MM-dd"
+        return df
     }
 
-    func addChore(_ chore: Chore) async throws -> Chore? {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let data = try encoder.encode(chore)
-        let json = try JSONSerialization.jsonObject(with: data)
-        let response = try await client
-            .from(tableName)
-            .insert(values: json)
-            .execute()
-        guard let insertedData = response.data else {
-            return nil
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try insertedData.decoded(to: Chore.self, decoder: decoder)
+    private static func parseDateOnly(_ s: String) -> Date? {
+        dateOnlyFormatter().date(from: s)
     }
 
-    func updateChore(_ chore: Chore) async throws -> Chore? {
-        guard let id = chore.id.uuidString as String? else { return nil }
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let data = try encoder.encode(chore)
-        let json = try JSONSerialization.jsonObject(with: data)
-        let response = try await client
-            .from(tableName)
-            .update(values: json)
-            .eq(column: "id", value: id)
-            .execute()
-        guard let updatedData = response.data else {
-            return nil
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try updatedData.decoded(to: Chore.self, decoder: decoder)
+    private static func formatDateOnly(_ date: Date) -> String {
+        // Convert Date -> "yyyy-MM-dd" in LOCAL calendar terms (prevents timezone off-by-one)
+        let comps = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        let y = comps.year ?? 1970
+        let m = comps.month ?? 1
+        let d = comps.day ?? 1
+        return String(format: "%04d-%02d-%02d", y, m, d)
     }
 
-    func deleteChore(id: UUID) async throws {
-        try await client
-            .from(tableName)
+    static func loadChores(householdId: UUID) async throws -> [ChoreRow] {
+        let client = SupabaseManager.shared.client
+
+        let dtos: [ChoreRowDTO] = try await client
+            .from("chores")
+            .select("id, household_id, title, due_date, is_done, assigned_to, created_at")
+            .eq("household_id", value: householdId.uuidString)
+            .order("due_date", ascending: true)
+            .execute()
+            .value
+
+        return dtos.map { dto in
+            ChoreRow(
+                id: dto.id,
+                householdId: dto.householdId,
+                title: dto.title,
+                dueDate: dto.dueDate.flatMap(parseDateOnly(_:)),
+                isDone: dto.isDone,
+                assignedTo: dto.assignedTo,
+                createdAt: dto.createdAt
+            )
+        }
+    }
+
+    static func addChore(householdId: UUID, title: String, dueDate: Date?, assignedTo: UUID?) async throws {
+        let client = SupabaseManager.shared.client
+        guard client.auth.currentUser?.id != nil else {
+            throw NSError(
+                domain: "ChoreService",
+                code: 401,
+                userInfo: [NSLocalizedDescriptionKey: "Not signed in"]
+            )
+        }
+
+        // Build an AnyJSON payload so PostgREST gets explicit column values
+        let insert: [String: AnyJSON] = [
+            "household_id": .string(householdId.uuidString),
+            "title": .string(title),
+            // If the caller accidentally passes nil, default to *today* so the UI
+            // doesn't create chores with a NULL due_date (which breaks Today/Upcoming logic).
+            // If you later want truly optional due dates, handle that at the call site.
+            "due_date": .string(formatDateOnly(dueDate ?? Date())),
+            "is_done": .bool(false),
+            "assigned_to": assignedTo == nil ? .null : .string(assignedTo!.uuidString)
+        ]
+
+        // Insert
+        _ = try await client
+            .from("chores")
+            .insert(insert)
+            .execute()
+    }
+
+    static func assignChore(choreId: UUID, assignedTo: UUID?) async throws {
+        let client = SupabaseManager.shared.client
+
+        let update: [String: AnyJSON] = [
+            "assigned_to": assignedTo == nil ? .null : .string(assignedTo!.uuidString)
+        ]
+
+        _ = try await client
+            .from("chores")
+            .update(update)
+            .eq("id", value: choreId.uuidString)
+            .execute()
+    }
+
+    static func setComplete(choreId: UUID, isComplete: Bool) async throws {
+        let client = SupabaseManager.shared.client
+
+        let update: [String: AnyJSON] = [
+            "is_done": .bool(isComplete)
+        ]
+
+        _ = try await client
+            .from("chores")
+            .update(update)
+            .eq("id", value: choreId.uuidString)
+            .execute()
+    }
+
+    static func deleteChore(choreId: UUID) async throws {
+        let client = SupabaseManager.shared.client
+
+        _ = try await client
+            .from("chores")
             .delete()
-            .eq(column: "id", value: id.uuidString)
+            .eq("id", value: choreId.uuidString)
             .execute()
-    }
-}
-
-import SwiftUI
-
-struct ChoreRow: View {
-    let chore: Chore
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(chore.title)
-                    .font(.headline)
-                if let dueDate = chore.dueDate {
-                    Text("Due: \(dueDate, formatter: dateFormatter)")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-            }
-            Spacer()
-            if chore.isComplete {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-            }
-        }
-        .padding(.vertical, 8)
-    }
-
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter
     }
 }

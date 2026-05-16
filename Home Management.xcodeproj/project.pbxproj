@@ -6,6 +6,21 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F28084EC2F341F6000DE8BC3 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28084E52F341B2900DE8BC3 /* AppState.swift */; };
+		F28084ED2F341F6400DE8BC3 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28084E42F341B0300DE8BC3 /* SupabaseManager.swift */; };
+		F280851B2F34204B00DE8BC3 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = F280851A2F34204B00DE8BC3 /* Auth */; };
+		F280851D2F34204B00DE8BC3 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = F280851C2F34204B00DE8BC3 /* Functions */; };
+		F280851F2F34204B00DE8BC3 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = F280851E2F34204B00DE8BC3 /* PostgREST */; };
+		F28085212F34204B00DE8BC3 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = F28085202F34204B00DE8BC3 /* Realtime */; };
+		F28085232F34204B00DE8BC3 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = F28085222F34204B00DE8BC3 /* Storage */; };
+		F28085252F34204B00DE8BC3 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F28085242F34204B00DE8BC3 /* Supabase */; };
+		F28085292F3425B600DE8BC3 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28085282F3425A500DE8BC3 /* AuthService.swift */; };
+		F280852B2F3425DD00DE8BC3 /* HouseholdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F280852A2F3425D300DE8BC3 /* HouseholdService.swift */; };
+		F2F77D4D2FB92A0900ADC599 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F2F77D4C2FB92A0900ADC599 /* .gitignore */; };
+		F2F77D4F2FB92AAC00ADC599 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F2F77D4E2FB92AAC00ADC599 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F210973C2F1C207C00E406B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,7 +42,60 @@
 		F210972E2F1C207B00E406B3 /* Home Management.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Home Management.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F210973B2F1C207C00E406B3 /* Home ManagementTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Home ManagementTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F21097452F1C207C00E406B3 /* Home ManagementUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Home ManagementUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F28084E42F341B0300DE8BC3 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
+		F28084E52F341B2900DE8BC3 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		F28085282F3425A500DE8BC3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		F280852A2F3425D300DE8BC3 /* HouseholdService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdService.swift; sourceTree = "<group>"; };
+		F2F77D4C2FB92A0900ADC599 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		F2F77D4E2FB92AAC00ADC599 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F21F1A1B2F29C59C00BD6528 /* Exceptions for "Views" folder in "Home Management" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AuthView.swift,
+				CalendarEventStore.swift,
+				CalendarView.swift,
+				ChoresView.swift,
+				DashboardView.swift,
+				GroceriesView.swift,
+				GroceryRow.swift,
+				HouseholdDetailView.swift,
+				HouseholdMembersListView.swift,
+				HouseholdSetupView.swift,
+				MemberColor.swift,
+				Roles.swift,
+				RootView.swift,
+				SettingsView.swift,
+			);
+			target = F210972D2F1C207B00E406B3 /* Home Management */;
+		};
+		F2CAE64F2F22ACEC003E6C07 /* Exceptions for "Modules" folder in "Home Management" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ChoreItem.swift,
+				ChoresViewModel.swift,
+				GroceryItem.swift,
+				GroceryModels.swift,
+				GroceryViewModel.swift,
+				Modules.swift,
+			);
+			target = F210972D2F1C207B00E406B3 /* Home Management */;
+		};
+		F2CAE6502F22ACEC003E6C07 /* Exceptions for "Modules" folder in "Home ManagementUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ChoreItem.swift,
+				ChoresViewModel.swift,
+				GroceryItem.swift,
+				GroceryModels.swift,
+				GroceryViewModel.swift,
+				Modules.swift,
+			);
+			target = F21097442F1C207C00E406B3 /* Home ManagementUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F21097302F1C207B00E406B3 /* Home Management */ = {
@@ -45,6 +113,23 @@
 			path = "Home ManagementUITests";
 			sourceTree = "<group>";
 		};
+		F2CAE64E2F22ACDA003E6C07 /* Modules */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F2CAE64F2F22ACEC003E6C07 /* Exceptions for "Modules" folder in "Home Management" target */,
+				F2CAE6502F22ACEC003E6C07 /* Exceptions for "Modules" folder in "Home ManagementUITests" target */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		F2CAE65E2F22B8CE003E6C07 /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F21F1A1B2F29C59C00BD6528 /* Exceptions for "Views" folder in "Home Management" target */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +137,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F280851F2F34204B00DE8BC3 /* PostgREST in Frameworks */,
+				F280851D2F34204B00DE8BC3 /* Functions in Frameworks */,
+				F28085252F34204B00DE8BC3 /* Supabase in Frameworks */,
+				F280851B2F34204B00DE8BC3 /* Auth in Frameworks */,
+				F28085232F34204B00DE8BC3 /* Storage in Frameworks */,
+				F28085212F34204B00DE8BC3 /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +166,13 @@
 		F21097252F1C207B00E406B3 = {
 			isa = PBXGroup;
 			children = (
+				F28084E32F341AF400DE8BC3 /* Infrastructure */,
+				F2CAE65E2F22B8CE003E6C07 /* Views */,
 				F21097302F1C207B00E406B3 /* Home Management */,
 				F210973E2F1C207C00E406B3 /* Home ManagementTests */,
 				F21097482F1C207C00E406B3 /* Home ManagementUITests */,
+				F2CAE64E2F22ACDA003E6C07 /* Modules */,
+				F28085192F34202000DE8BC3 /* Frameworks */,
 				F210972F2F1C207B00E406B3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +185,26 @@
 				F21097452F1C207C00E406B3 /* Home ManagementUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F28084E32F341AF400DE8BC3 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				F280852A2F3425D300DE8BC3 /* HouseholdService.swift */,
+				F28085282F3425A500DE8BC3 /* AuthService.swift */,
+				F28084E52F341B2900DE8BC3 /* AppState.swift */,
+				F28084E42F341B0300DE8BC3 /* SupabaseManager.swift */,
+				F2F77D4C2FB92A0900ADC599 /* .gitignore */,
+				F2F77D4E2FB92AAC00ADC599 /* README.md */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		F28085192F34202000DE8BC3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +227,12 @@
 			);
 			name = "Home Management";
 			packageProductDependencies = (
+				F280851A2F34204B00DE8BC3 /* Auth */,
+				F280851C2F34204B00DE8BC3 /* Functions */,
+				F280851E2F34204B00DE8BC3 /* PostgREST */,
+				F28085202F34204B00DE8BC3 /* Realtime */,
+				F28085222F34204B00DE8BC3 /* Storage */,
+				F28085242F34204B00DE8BC3 /* Supabase */,
 			);
 			productName = "Home Management";
 			productReference = F210972E2F1C207B00E406B3 /* Home Management.app */;
@@ -155,6 +276,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				F21097482F1C207C00E406B3 /* Home ManagementUITests */,
+				F2CAE64E2F22ACDA003E6C07 /* Modules */,
 			);
 			name = "Home ManagementUITests";
 			packageProductDependencies = (
@@ -195,6 +317,9 @@
 			);
 			mainGroup = F21097252F1C207B00E406B3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F210972F2F1C207B00E406B3 /* Products */;
 			projectDirPath = "";
@@ -212,6 +337,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2F77D4D2FB92A0900ADC599 /* .gitignore in Resources */,
+				F2F77D4F2FB92AAC00ADC599 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +363,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F28084ED2F341F6400DE8BC3 /* SupabaseManager.swift in Sources */,
+				F28084EC2F341F6000DE8BC3 /* AppState.swift in Sources */,
+				F28085292F3425B600DE8BC3 /* AuthService.swift in Sources */,
+				F280852B2F3425DD00DE8BC3 /* HouseholdService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +531,7 @@
 				DEVELOPMENT_TEAM = 54CV2535JF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Home Management needs access to your calendar to display family events.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +564,7 @@
 				DEVELOPMENT_TEAM = 54CV2535JF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Home Management needs access to your calendar to display family events.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +711,50 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F280851A2F34204B00DE8BC3 /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		F280851C2F34204B00DE8BC3 /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		F280851E2F34204B00DE8BC3 /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		F28085202F34204B00DE8BC3 /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		F28085222F34204B00DE8BC3 /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		F28085242F34204B00DE8BC3 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28084E22F34199900DE8BC3 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F21097262F1C207B00E406B3 /* Project object */;
 }

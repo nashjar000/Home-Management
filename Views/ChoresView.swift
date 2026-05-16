@@ -8,24 +8,12 @@ import SwiftUI
 
 struct ChoresView: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "checklist")
-                .font(.system(size: 44))
-                .foregroundStyle(.tint)
-
-            Text("Chores")
-                .font(.largeTitle)
-                .bold()
-
-            Text("Coming soon — chores module prototype next.")
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+        NavigationStack {
+            ChoresListView()
         }
-        .padding()
-        .navigationTitle("Chores")
     }
 }
 
 #Preview {
-    NavigationStack { ChoresView() }
+    NavigationStack { ChoresListView() }
 }
